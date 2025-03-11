@@ -1,5 +1,5 @@
 import unittest
-
+from markdown_extractor import *
 from textnode import TextNode, TextType, text_node_to_html_node
 
 class TestTextNode(unittest.TestCase):
@@ -52,6 +52,34 @@ class TestTextNodeToHTMLNode(unittest.TestCase):
         html_node = text_node_to_html_node(node)
         self.assertEqual(html_node.tag, "b")
         self.assertEqual(html_node.value, "This is bold")
+
+def test_text_to_textnodes_plain():
+    text = "This is plain text"
+    nodes = text_to_textnodes(text)
+    assert len(nodes) == 1
+    assert nodes[0].text == "This is plain text"
+    assert nodes[0].text_type == TextType.TEXT
+
+def test_text_to_textnodes_bold():
+    text = "This is **bold** text"
+    nodes = text_to_textnodes(text)
+    assert len(nodes) == 3
+    assert nodes[0].text == "This is "
+    assert nodes[0].text_type == TextType.TEXT
+    assert nodes[1].text == "bold"
+    assert nodes[1].text_type == TextType.BOLD
+    assert nodes[2].text == " text"
+    assert nodes[2].text_type == TextType.TEXT
+
+def test_text_to_textnodes_complex():
+    text = "This is **bold** and _italic_ with a [link](https://boot.dev)"
+    nodes = text_to_textnodes(text)
+    # Assert the correct number of nodes (7 in this case)
+    assert len(nodes) == 7
+    # You can add more specific assertions about each node
+
+def test_text_to_textnodes_example():
+    text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
 
 
 
