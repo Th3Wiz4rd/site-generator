@@ -20,3 +20,20 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
                 split_nodes.append(TextNode(sections[i], text_type))
         new_nodes.extend(split_nodes)
     return new_nodes
+
+def text_to_textnodes(text):
+    # Start with a single TextNode with the entire text
+    nodes = [TextNode(text, TextType.TEXT)]
+    
+    # Process bold text (with **)
+    nodes = split_nodes_delimiter(nodes, "**", TextType.BOLD)
+    
+    # Process italic text (with _)
+    nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+    
+    # Process code text (with `)
+    nodes = split_nodes_delimiter(nodes, "`", TextType.CODE)
+    
+    # Process other types as needed
+    
+    return nodes
