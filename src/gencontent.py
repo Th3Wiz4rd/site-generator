@@ -2,7 +2,7 @@ import os
 from markdown_blocks import markdown_to_html_node
 
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(from_path, template_path, dest_path, basepath):
     print(f"Generating page from {from_path} to {dest_path} using {template_path}")
     from_file = open(from_path, "r")
     markdown_content = from_file.read()
@@ -19,11 +19,16 @@ def generate_page(from_path, template_path, dest_path):
     template = template.replace("{{ Title }}", title)
     template = template.replace("{{ Content }}", html)
 
+    # Replace href and src attributes with basepath
+    template = template.replace('href="/', f'href="{basepath}')
+    template = template.replace('src="/', f'src="{basepath}')
+
     dest_dir_path = os.path.dirname(dest_path)
     if dest_dir_path != "":
         os.makedirs(dest_dir_path, exist_ok=True)
     to_file = open(dest_path, "w")
     to_file.write(template)
+    to_file.close()
 
 
 def extract_title(md):
@@ -33,7 +38,8 @@ def extract_title(md):
             return line[2:]
     raise ValueError("no title found")
 
-def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path, basepath):
+    
     entries = os.listdir(dir_path_content)
 
     for entry in entries:
@@ -46,13 +52,13 @@ def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
 
                 os.makedirs(os.path.dirname(dest_file_path), exist_ok=True)
 
-                generate_page(content_entry_path, template_path, dest_file_path)
+                generate_page(content_entry_path, template_path, dest_file_path, basepath)
 
         elif os.path.isdir(content_entry_path):
             dest_subdir = os.path.join(dest_dir_path, entry)
             os.makedirs(dest_subdir, exist_ok=True)
             
-            generate_pages_recursive(content_entry_path, template_path, dest_subdir)
+            generate_pages_recursive(content_entry_path, template_path, dest_subdir, basepath)
 
         
             
